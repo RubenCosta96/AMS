@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Pagamento de Prestações</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        header #iconCliente {
+            width: 40px;
+            height: 40px;
+            background-color: #ccc;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .prestacao-box {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .btn, .btn-pagar-prestacao {
+            padding: 10px 20px;
+            margin-top: 10px;
+            margin-right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .btn:hover, .btn-pagar-prestacao:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div id="iconCliente">C</div>
+    </header>
+
+    <main>
+        <div class="prestacao-box" id="prestacoesCliente">
+            <h3>Prestações a Pagar</h3>
+            <div id="prestacoesList"></div>
+        </div>
+        <form id="formPagamento" style="display: none;" onsubmit="return efetuarPagamento(event);">
+            <label for="prestacaoInput" class="form-field">Número da Prestação:</label>
+            <input type="text" id="prestacaoInput" name="prestacao" placeholder="Insira o número da prestação" class="form-field">
+            <button class="btn-pagar-prestacao" onclick="efetuarPagamento()">Pagar Prestação</button>
+            <button type="button" class="btn" onclick="cancelarPagamentoPrestacao()">Cancelar</button>
+        </form>
+    </main>
+
+    <script>
+        var prestacoesCliente = [
+            {
+                numero: '13',
+                dataEfetuado: '14/11/2023',
+                descricao: 'Renovação cozinha',
+                valor: 1090.87,
+                estado: 'Concluído'
+            },
+            {
+                numero: '13',
+                dataEfetuado: '28/11/2023',
+                descricao: 'Renovação sala de estar',
+                valor: null, 
+                estado: 'Em execução'
+            },
+            {
+                numero: '15',
+                dataEfetuado: '02/12/2023',
+                descricao: 'Serviços manutenção continuada',
+                valor: null, 
+                estado: 'Por iniciar'
+            }
+        ];
+
+        function carregarPrestacoes() {
+            var prestacoesDiv = document.getElementById('prestacoesList');
+
+            prestacoesCliente.forEach(function (prestacao) {
+                prestacoesDiv.innerHTML += formatarPrestacao(prestacao);
+            });
+        }
+
+        function pagarPrestacao(numero) {
+            var prestacaoAPagar = prestacoesCliente.find(function (prestacao) {
+                return prestacao.numero === numero;
+            });
+
+            if (prestacaoAPagar) {
+                alert("Prestação paga com sucesso!");
+                exibirPrestacoesCliente();
+            }
+        }
+
+        function cancelarPagamentoPrestacao() {
+            document.getElementById('formPagamento').style.display = 'none';
+            document.getElementById('prestacaoInput').value = '';
+        }
+
+        function exibirPrestacoesCliente() {
+            var prestacoesDiv = document.getElementById('prestacoesList');
+            prestacoesDiv.innerHTML = '';
+
+            if (prestacoesCliente.length > 0) {
+                prestacoesCliente.forEach(function (prestacao) {
+                    prestacoesDiv.innerHTML += formatarPrestacao(prestacao);
+                });
+            } else {
+                prestacoesDiv.innerHTML = '<p>Nenhuma prestação a pagar.</p>';
+            }
+        }
+
+        function formatarPrestacao(prestacao) {
+            return '<div class="prestacao-box">' +
+                '<h3>Prestação # ' + prestacao.numero + '</h3>' +
+                '<p><strong>Descrição:</strong> ' + prestacao.descricao + '</p>' +
+                '<p><strong>Data Efetuado:</strong> ' + prestacao.dataEfetuado + '</p>' +
+                '<p><strong>Valor:</strong> ' + (prestacao.valor ? formatarValorEmEuros(prestacao.valor) : 'Não especificado') + '</p>' +
+                '<p><strong>Estado:</strong> ' + prestacao.estado + '</p>' +
+                '<button class="btn" onclick="pagarPrestacao(\'' + prestacao.numero + '\')">Pagar Prestação</button>' +
+                '</div>';
+        }
+
+        function efetuarPagamento(event) {
+            event.preventDefault();
+            var numeroPrestacao = document.getElementById('prestacaoInput').value;
+
+            if (numeroPrestacao) {
+                alert("Pagamento efetuado para a Prestação #" + numeroPrestacao);
+                exibirPrestacoesCliente();
+                cancelarPagamentoPrestacao();
+                return false;
+            } else {
+                alert("Por favor, insira o número da prestação.");
+                return false;
+            }
+        }
+
+
+        function formatarValorEmEuros(valor) {
+            return parseFloat(valor).toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' });
+        }
+
+
+        carregarPrestacoes();
+
+        $(function () {
+            $("#dataInput").datepicker();
+        });
+    </script>
+</body>
+</html>

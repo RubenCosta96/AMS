@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Cliente - Listar Pagamentos</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    header {
+      background-color: #333;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    header #perfil, header #iconCliente {
+      width: 40px;
+      height: 40px;
+      background-color: #ccc;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      margin-left: 20px;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .proposta-box {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .historico-box {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      margin-top: 10px;
+      margin-right: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background-color: #45a049;
+    }
+
+    .btn-green {
+      background-color: #4CAF50;
+    }
+
+    .btn-green:hover {
+      background-color: #45a049;
+    }
+
+    .estado-aberto {
+      color: #f39c12;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .modal-btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .modal-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="iconCliente">C</div>
+</header>
+
+<main>
+  <div class="proposta-box">
+    <h3>Lista de Pagamentos</h3>
+    <button class="btn" onclick="alternarListaPagamentos()">Mostrar Pagamentos</button>
+    <div id="pagamentosCliente" style="display: none;">
+    </div>
+    <button class="btn btn-green" onclick="fecharLista()" style="display: none;">Fechar Lista</button>
+  </div>
+
+  <div class="historico-box" id="conteudo">
+  </div>
+</main>
+
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <p id="modalMessage"></p>
+    <button class="modal-btn btn-green" id="btnSairDetalhes" onclick="sairDetalhesPagamento()">Sair dos Detalhes</button>
+  </div>
+</div>
+
+<script>
+  var pagamentosCliente = [
+    {
+      descricao: "Primeiro Pagamento FAT A24/1",
+      data: "01/01/2024",
+      valor: "2500.00€",
+      estado: "Efetuado",
+      detalhes: "Detalhes completos do pagamento Mensalidade."
+    },
+    {
+      descricao: "Segundo Pagamento FAT A24/1",
+      data: "05/01/2024",
+      valor: "5000.00€",
+      estado: "Efetuado",
+      detalhes: "Detalhes completos do pagamento Mensalidade."
+    },
+  ];
+
+  function alternarListaPagamentos() {
+    var pagamentosClienteDiv = document.getElementById('pagamentosCliente');
+    var btnFecharLista = document.querySelector('#pagamentosCliente + .btn-green');
+
+    if (pagamentosClienteDiv.style.display === 'none' || pagamentosClienteDiv.style.display === '') {
+      pagamentosClienteDiv.style.display = 'block';
+      btnFecharLista.style.display = 'inline-block';
+      exibirPagamentosCliente();
+    } else {
+      pagamentosClienteDiv.style.display = 'none';
+      btnFecharLista.style.display = 'none';
+    }
+  }
+
+  function exibirPagamentosCliente() {
+    var pagamentosClienteDiv = document.getElementById('pagamentosCliente');
+    pagamentosClienteDiv.innerHTML = '';
+
+    if (pagamentosCliente.length > 0) {
+      pagamentosCliente.forEach(function (pagamento) {
+        pagamentosClienteDiv.innerHTML += formatarResumoPagamentoCliente(pagamento);
+      });
+    } else {
+      pagamentosClienteDiv.innerHTML = '<p>Nenhum pagamento registrado ainda.</p>';
+    }
+  }
+
+  function formatarResumoPagamentoCliente(pagamento) {
+    return '<div class="proposta-box">' +
+      '<h3>Pagamento</h3>' +
+      '<p><strong>Descrição:</strong> ' + pagamento.descricao + '</p>' +
+      '<p><strong>Data:</strong> ' + pagamento.data + '</p>' +
+      '<p><strong>Valor:</strong> ' + pagamento.valor + '</p>' +
+      '<p><button class="btn" onclick="exibirDetalhesPagamento(\'' + pagamento.descricao + '\', \'' + pagamento.estado + '\')">Detalhes</button></p>' +
+      '</div>';
+  }
+
+  function exibirDetalhesPagamento(descricao, estado) {
+    var modal = document.getElementById('myModal');
+    var modalMessage = document.getElementById('modalMessage');
+    var btnSairDetalhes = document.getElementById('btnSairDetalhes');
+
+
+    modalMessage.innerHTML = '<p><strong>Descrição:</strong> ' + descricao + '</p>' +
+      '<p><strong>Estado:</strong> ' + estado + '</p>';
+
+
+    btnSairDetalhes.onclick = function () {
+      modal.style.display = "none";
+    };
+
+
+    modal.style.display = "flex";
+  }
+
+  function sairDetalhesPagamento() {
+    var modal = document.getElementById('myModal');
+    modal.style.display = "none";
+  }
+
+  function fecharLista() {
+    var pagamentosClienteDiv = document.getElementById('pagamentosCliente');
+    var btnFecharLista = document.querySelector('#pagamentosCliente + .btn-green');
+    pagamentosClienteDiv.style.display = 'none';
+    btnFecharLista.style.display = 'none';
+  }
+</script>
+
+</body>
+</html>

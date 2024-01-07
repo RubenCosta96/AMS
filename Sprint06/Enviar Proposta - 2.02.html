@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Prestador de Serviços - Enviar Proposta</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #333;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    header #perfil {
+      width: 40px;
+      height: 40px;
+      background-color: #ccc;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      margin-left: 20px;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background-color 0.3s ease;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background-color: #45a049;
+    }
+
+    .btn:last-child {
+      margin-right: 0;
+    }
+
+    .message-box {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    .proposta-box {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+
+    .proposta-box textarea, .proposta-box input {
+      width: 100%;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+
+    .message-time {
+      font-size: 10px;
+      color: #888;
+      float: right;
+    }
+
+    .historico-box {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+
+    .historico-box p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="perfil">A</div>
+</header>
+
+<main>
+  <div class="proposta-box">
+    <h3>Enviar Proposta</h3>
+    <label for="tipoServico">Tipo de Serviço:</label>
+    <input type="text" id="tipoServico" placeholder="Ex: Reforma da Cozinha">
+
+    <label for="materiais">Materiais:</label>
+    <textarea id="materiais" placeholder="Descreva os materiais necessários..."></textarea>
+
+    <label for="custosMateriais">Custos dos Materiais:</label>
+    <input type="text" id="custosMateriais" placeholder="Ex: 5000€">
+
+    <label for="custoMaoDeObra">Custo de Mão de Obra:</label>
+    <input type="text" id="custoMaoDeObra" placeholder="Ex: 3000€">
+
+    <label for="outrosCustos">Outros Custos:</label>
+    <input type="text" id="outrosCustos" placeholder="Ex: 1000€">
+
+    <label for="total">Total:</label>
+    <input type="text" id="total" placeholder="Ex: 9000€" readonly>
+
+    <button class="btn" onclick="enviarProposta()" style="margin-top: 10px;">Enviar Proposta</button>
+    <button class="btn" onclick="guardarRascunho()" style="margin-top: 10px;">Guardar como Rascunho</button>
+    <button class="btn" onclick="exibirHistorico()" style="margin-top: 10px;">Histórico de Propostas Enviadas</button>
+  </div>
+
+  <div class="message-box" id="conteudo">
+
+  </div>
+</main>
+
+<script>
+
+  var propostasEnviadas = [];
+  var rascunhos = [];
+
+  function calcularTotal() {
+    var custoMateriais = parseFloat(document.getElementById('custosMateriais').value) || 0;
+    var custoMaoDeObra = parseFloat(document.getElementById('custoMaoDeObra').value) || 0;
+    var outrosCustos = parseFloat(document.getElementById('outrosCustos').value) || 0;
+
+    var total = custoMateriais + custoMaoDeObra + outrosCustos;
+
+    document.getElementById('total').value = total.toFixed(2) + '€';
+  }
+
+  function enviarProposta() {
+    var tipoServico = document.getElementById('tipoServico').value;
+    var materiais = document.getElementById('materiais').value;
+    var custosMateriais = document.getElementById('custosMateriais').value;
+    var custoMaoDeObra = document.getElementById('custoMaoDeObra').value;
+    var outrosCustos = document.getElementById('outrosCustos').value;
+
+    if (tipoServico.trim() !== '' && materiais.trim() !== '' && custosMateriais.trim() !== '' && custoMaoDeObra.trim() !== '') {
+      var proposta = {
+        tipoServico: tipoServico,
+        materiais: materiais,
+        custosMateriais: custosMateriais,
+        custoMaoDeObra: custoMaoDeObra,
+        outrosCustos: outrosCustos,
+        total: calcularTotal().toString(),
+        timestamp: new Date().toLocaleString()
+      };
+
+      propostasEnviadas.push(proposta);
+
+      exibirHistorico();
+      limparCampos();
+    }
+  }
+
+  function guardarRascunho() {
+    var tipoServico = document.getElementById('tipoServico').value;
+    var materiais = document.getElementById('materiais').value;
+    var custosMateriais = document.getElementById('custosMateriais').value;
+    var custoMaoDeObra = document.getElementById('custoMaoDeObra').value;
+    var outrosCustos = document.getElementById('outrosCustos').value;
+
+    if (tipoServico.trim() !== '' && materiais.trim() !== '' && custosMateriais.trim() !== '' && custoMaoDeObra.trim() !== '') {
+      var rascunho = {
+        tipoServico: tipoServico,
+        materiais: materiais,
+        custosMateriais: custosMateriais,
+        custoMaoDeObra: custoMaoDeObra,
+        outrosCustos: outrosCustos,
+        timestamp: new Date().toLocaleString()
+      };
+
+      rascunhos.push(rascunho);
+
+      exibirHistorico();
+      limparCampos();
+    }
+  }
+
+  function exibirHistorico() {
+    var conteudo = document.getElementById('conteudo');
+    conteudo.innerHTML = '';
+
+    if (propostasEnviadas.length > 0) {
+      conteudo.innerHTML += '<div class="historico-box"><h3>Histórico de Propostas Enviadas</h3></div>';
+      propostasEnviadas.forEach(function(proposta) {
+        conteudo.innerHTML += formatarProposta(proposta);
+      });
+    } else {
+      conteudo.innerHTML = '<p>Nenhuma proposta enviada ainda.</p>';
+    }
+  }
+
+  function formatarProposta(proposta) {
+    return '<div class="proposta-box">' +
+      '<h3>Proposta do Prestador de Serviços</h3>' +
+      '<p><strong>Tipo de Serviço:</strong> ' + proposta.tipoServico + '</p>' +
+      '<p><strong>Materiais:</strong> ' + proposta.materiais + '</p>' +
+      '<p><strong>Custos dos Materiais:</strong> ' + proposta.custosMateriais + '€</p>' +
+      '<p><strong>Custo de Mão de Obra:</strong> ' + proposta.custoMaoDeObra + '€</p>' +
+      '<p><strong>Outros Custos:</strong> ' + proposta.outrosCustos + '€</p>' +
+      '<p><strong>Total:</strong> ' + proposta.total + '</p>' +
+      '<p><strong>Enviado em:</strong> ' + proposta.timestamp + '</p>' +
+      '<span class="message-time">15:00</span></div>';
+  }
+
+  function limparCampos() {
+    document.getElementById('tipoServico').value = '';
+    document.getElementById('materiais').value = '';
+    document.getElementById('custosMateriais').value = '';
+    document.getElementById('custoMaoDeObra').value = '';
+    document.getElementById('outrosCustos').value = '';
+    document.getElementById('total').value = '';
+  }
+</script>
+
+</body>
+</html>

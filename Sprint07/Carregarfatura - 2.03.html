@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+  <title>Prestador de Serviços - Gestão de Faturas</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-3.6.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <style>
+    .form-field {
+      display: block;
+      margin-bottom: 10px;
+    }
+      body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    header {
+      background-color: #333;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    header #perfil, header #iconCliente {
+      width: 40px;
+      height: 40px;
+      background-color: #ccc;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      margin-left: 20px;
+      cursor: pointer;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .fatura-box, .fatura-box {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .btn, .btn-emite-fatura {
+      padding: 10px 20px;
+      margin-top: 10px;
+      margin-right: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .btn:hover, .btn-emite-fatura:hover {
+      background-color: #45a049;
+    }
+
+    .estado-aberto {
+      color: #f39c12;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .modal-btn {
+      margin-top: 10px;
+    }
+
+    #valorInput {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    .form-field {
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+    <header>
+        <div id="iconCliente">C</div>
+    </header>
+    
+    <main>
+        <div class="fatura-box" id="faturasEmitidas">
+            <h3>Faturas Emitidas</h3>
+            <div id="faturasCliente"></div>
+        </div>
+    
+     
+        <form id="formFatura" style="display: none;" onsubmit="return criarFatura(event);">
+            <label for="tituloInput" class="form-field">Título:</label>
+            <input type="text" id="tituloInput" name="titulo" placeholder="Insira o título" class="form-field">
+            <label for="descricaoInput" class="form-field">Descrição:</label>
+            <textarea id="descricaoInput" name="descricao" placeholder="Insira a descrição" class="form-field"></textarea>
+            <label for="dataInput" class="form-field">Data:</label>
+            <input type="text" id="dataInput" name="data" placeholder="Insira a data" class="form-field">
+            <label for="valorInput" class="form-field">Valor:</label>
+            <input type="text" id="valorInput" name="valor" placeholder="Insira o valor" class="form-field">
+            <button class="btn-emite-fatura" onclick="criarFatura()">Criar</button>
+            <button type="button" class="btn" onclick="cancelarCriacaoFatura()">Cancelar</button>
+        </form>
+    
+   
+        <button class="btn-emite-fatura" onclick="mostrarFormularioCriacaoFatura()">Criar Fatura</button>
+    </main>
+    
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+          <p id="modalMessage"></p>
+          <button class="modal-btn" id="btnSim">Sim</button>
+          <button class="modal-btn" id="btnNao">Não</button>
+        </div>
+      </div>
+
+      <script>
+        var faturasEnviadas = [];
+        var faturasCliente = [];
+
+        function enviarfatura(titulo) {
+    var faturaAceita = faturasCliente.find(function (fatura) {
+        return fatura.titulo === titulo;
+    });
+
+    if (faturaAceita) {
+        faturaAceita.estado = "Enviado";
+        alert("Fatura enviada");
+        exibirfaturasCliente();
+    }
+}
+
+function cancelarfatura(titulo) {
+    var faturaRecusada = faturasCliente.find(function (fatura) {
+        return fatura.titulo === titulo;
+    });
+
+    if (faturaRecusada) {
+        var index = faturasCliente.indexOf(faturaRecusada);
+        if (index !== -1) {
+            faturasCliente.splice(index, 1);
+            alert("Fatura cancelada");
+            exibirfaturasCliente();
+        }
+    }
+}
+
+      
+        function exibirfaturasCliente() {
+          var faturasClienteDiv = document.getElementById('faturasCliente');
+          faturasClienteDiv.innerHTML = '';
+      
+          if (faturasCliente.length > 0) {
+            faturasClienteDiv.innerHTML;
+            faturasCliente.forEach(function (fatura) {
+              faturasClienteDiv.innerHTML += formatarfaturaCliente(fatura);
+            });
+          } else {
+            faturasClienteDiv.innerHTML = '<p>Nenhuma fatura recebida ainda.</p>';
+          }
+        }
+
+        function formatarValorEmEuros(valor) {
+        return parseFloat(valor).toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' });
+        }
+      
+        function formatarfaturaCliente(fatura) {
+          return '<div class="fatura-box">' +
+            '<h3>Fatura para o Pedido#13</h3>' +
+            '<p><strong>Título:</strong> ' + fatura.titulo + '</p>' +
+            '<p><strong>Descrição:</strong> ' + fatura.descricao + '</p>' +
+            '<p><strong>Data:</strong> ' + fatura.data + '</p>' +
+            '<p><strong>Valor:</strong> ' + formatarValorEmEuros(fatura.valor) + '</p>' +
+            '<p><strong>Estado:</strong> <span class="estado-aberto"> ' + fatura.estado + '</p>' +
+            '<button class="btn" onclick="enviarfatura(\'' + fatura.titulo + '\')">Enviar</button>' +
+            '<button class="btn" onclick="cancelarfatura(\'' + fatura.titulo + '\')">Cancelar</button>' 
+            
+        }
+      
+        function criarFatura(event) {
+            event.preventDefault();
+          var titulo = document.getElementById('tituloInput').value;
+          var descricao = document.getElementById('descricaoInput').value;
+          var data = document.getElementById('dataInput').value;
+          var valor = document.getElementById('valorInput').value;
+      
+          if (titulo && descricao && data && valor) {
+            var fatura = {
+              titulo: titulo,
+              descricao: descricao,
+              data: data,
+              valor: valor,
+              estado: "Aberto"
+            };
+      
+            faturasCliente.push(fatura);
+            alert("Fatura Criada para '" + titulo + "'");
+            exibirfaturasCliente();
+            cancelarCriacaoFatura();
+            return false;
+          } else {
+            alert("Por favor, preencha todos os campos.");
+            return false;
+          }
+        }
+      
+        function mostrarFormularioCriacaoFatura() {
+          document.getElementById('formFatura').style.display = 'block';
+        }
+      
+        function cancelarCriacaoFatura() {
+          document.getElementById('formFatura').style.display = 'none';
+          document.getElementById('tituloInput').value = '';
+          document.getElementById('descricaoInput').value = '';
+          document.getElementById('dataInput').value = '';
+          document.getElementById('valorInput').value = '';
+        }
+        $(function () {
+            $("#dataInput").datepicker();
+        });
+        
+        </script>
+      
+      </body>
+      </html>

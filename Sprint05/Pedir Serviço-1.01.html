@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Pedidos de Serviço</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    #headercont {
+        width: 80%;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+      min-height: 20px;
+    }
+    #container {
+      width: 80%;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #userIcon {
+      width: 40px;
+      height: 40px;
+      background-color: #4caf50;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-weight: bold;
+      font-size: 20px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+    form {
+      background-color: white;
+      border: 1px solid #ccc;
+      margin: 20px auto;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      color: black;
+      display: block;
+      margin-bottom: 8px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+    <div id="headercont">
+        <header>
+          <div id="userIcon" onclick="goToProfile()">U</div>
+        </header>
+      </div>
+  <div id="container">
+    <h2>Criar Pedido de Serviço</h2>
+    <form id="serviceForm">
+      <label for="serviceType">Tipo de Serviço:</label>
+      <select id="serviceType" name="serviceType">
+        <option value="manutencao">Manutenção</option>
+        <option value="reforma">Reforma</option>
+      </select>
+
+      <label for="propertyType">Tipo de Imóvel:</label>
+      <select id="propertyType" name="propertyType">
+        <option value="casa">Casa</option>
+        <option value="apartamento">Apartamento</option>
+      </select>
+
+      <label for="address">Morada do Imóvel:</label>
+      <input type="text" id="address" name="address" required>
+
+      <label for="completionDate">Data de Conclusão:</label>
+      <input type="date" id="completionDate" name="completionDate" required>
+
+      <label for="description">Descrição do Pedido:</label>
+      <textarea id="description" name="description" rows="4" required></textarea>
+
+      <button type="button" onclick="submitForm()">Enviar Pedido</button>
+    </form>
+  </div>
+
+  <script>
+    function goToProfile() {
+      alert('Redirecionar para a página de perfil do Utilizador');
+    }
+
+    function submitForm() {
+      alert('Pedido enviado com sucesso!');
+    }
+  </script>
+</body>
+</html>
